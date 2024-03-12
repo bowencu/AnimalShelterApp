@@ -6,7 +6,7 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 ### Tech Stack: HTML, CSS, PHP, Oracle, SQL
 
 ## List of queries to implement
-- [ ] Insert (Haad)
+- [X] Insert (Haad)
 - [ ] Delete (Bowen)
 - [ ] Update (Bowen)
 - [ ] Selection (Haad)
