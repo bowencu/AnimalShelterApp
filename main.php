@@ -18,6 +18,7 @@
 
 -->
 
+<!-- Haad: Everything in this php element remains unchanged, just change your cwl and dbpassword -->
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
@@ -31,8 +32,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_cwl";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a12345678";	// change to 'a' + your student number
+$config["dbuser"] = "ora_hbhutta3";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a78030533";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -46,34 +47,33 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 <html>
 
-<head>
-	<title>CPSC 304 PHP/Oracle Demonstration</title>
+<head> 
+  <title>Animal Shelter App</title> 
 </head>
 
+<!--This remains unchanged, just allows us to reset anything the user inserts -->
 <body>
-	<h2>Reset</h2>
-	<p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
-
-	<form method="POST" action="oracle-template.php">
-		<!-- "action" specifies the file or page that will receive the form data for processing. As with this example, it can be this same file. -->
+  <h2>Reset</h2> 
+  <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
+  <form method="POST" action="oracle-template.php"> // This will be unchanged, it just sets up our form
 		<input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
 		<p><input type="submit" value="Reset" name="reset"></p>
 	</form>
 
 	<hr />
 
-	<h2>Insert Values into DemoTable</h2>
+	<h2>Insert Values into AnimalHospital</h2> // Done by Haad
 	<form method="POST" action="oracle-template.php">
-		<input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
-		Number: <input type="text" name="insNo"> <br /><br />
-		Name: <input type="text" name="insName"> <br /><br />
+    <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
+    Hospital Address: <input type="text" name="hospitalAddress"> <br /><br/>
+    Name: <input type="text" name="name"> <br /><br/>
 
 		<input type="submit" value="Insert" name="insertSubmit"></p>
 	</form>
 
 	<hr />
 
-	<h2>Update Name in DemoTable</h2>
+	<h2>Update Name in DemoTable</h2> // Done by Bowen
 	<p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
 	<form method="POST" action="oracle-template.php">
@@ -86,7 +86,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
-	<h2>Count the Tuples in DemoTable</h2>
+	<h2>Count the Tuples in ____</h2>
 	<form method="GET" action="oracle-template.php">
 		<input type="hidden" id="countTupleRequest" name="countTupleRequest">
 		<input type="submit" name="countTuples"></p>
@@ -94,7 +94,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
-	<h2>Display Tuples in DemoTable</h2>
+	<h2>Display Tuples in ____</h2>
 	<form method="GET" action="oracle-template.php">
 		<input type="hidden" id="displayTuplesRequest" name="displayTuplesRequest">
 		<input type="submit" name="displayTuples"></p>
@@ -102,8 +102,6 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 
 	<?php
-	// The following code will be parsed as PHP
-
 	function debugAlertMessage($message)
 	{
 		global $show_debug_alert_messages;
@@ -188,7 +186,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		echo "</table>";
 	}
 
-	function connectToDB()
+	function connectToDB() // no change needed
 	{
 		global $db_conn;
 		global $config;
@@ -209,7 +207,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		}
 	}
 
-	function disconnectFromDB()
+	function disconnectFromDB() // no changed needed
 	{
 		global $db_conn;
 
@@ -217,8 +215,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_close($db_conn);
 	}
 
-	function handleUpdateRequest()
-	{
+  function handleUpdateRequest() // Change table name based on update statement (Bowen)
+  {
 		global $db_conn;
 
 		$old_name = $_POST['oldName'];
@@ -229,7 +227,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	function handleResetRequest()
+	function handleResetRequest() // NEEDS TO BE CHANGED
 	{
 		global $db_conn;
 		// Drop old table
@@ -241,7 +239,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	function handleInsertRequest()
+	function handleInsertRequest() // NEEDS TO BE CHANGED
 	{
 		global $db_conn;
 
@@ -259,7 +257,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	function handleCountRequest()
+	function handleCountRequest() // NEEDS TO BE CHANGED
 	{
 		global $db_conn;
 
@@ -270,7 +268,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		}
 	}
 
-	function handleDisplayRequest()
+	function handleDisplayRequest() // NEEDS TO BE CHANGED
 	{
 		global $db_conn;
 		$result = executePlainSQL("SELECT * FROM demoTable");
