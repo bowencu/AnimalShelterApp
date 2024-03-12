@@ -19,3 +19,21 @@
 ### Triston:
 - Triston drew the original ER diagram so he knows the most about the entities and relationships, so he will consult the ER diagram to determine which entities are affected by each operation listed above.
 - Will write SQL script for create table statements and populating tables with insert statements
+
+
+## Dates
+- 15/03/2024
+  - [ ] Create fully executable SQL script (Triston)
+  - [ ] Determine which tables can be modified by users of the database (Triston)
+  - [ ] Pick a table to insert into and finish insert query (Haad)
+  - [ ] Pick a table to select from and finish insert query (Haad)
+  - [ ] Pick a table to update and finish update query (Bowen)
+  - [ ] Pick a table to delete from and finish delete query (Bowen)
+- 16/03/2024
+  - [ ] Join (Haad)
+  - [ ] Aggregation with having (Bowen)
+- 17/03/2024 - 30/03/2024
+  - [ ] Finish remaining queries
+- 5/04/2024
+  - [ ] Test run (Triston)
+  - [ ] Submit URL (Triston)
