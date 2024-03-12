@@ -1,5 +1,8 @@
 # project_e5b3i_o0s8i_r9a5f (Bowen, Haad, Triston)
 
+## Project Summary
+Our project models a pet adoption system managed by an animal shelter. This shelter serves clients who can adopt pets staying at the animal shelter. The shelter is just one branch that is owned by a shelter corporation which manages animal shelter branches within a certain region of the country. Moreover, the shelter is associated with an animal hospital which manages the health of the sheltered animals. In the hospital, veterinarians are responsible for administering vaccines for animals at the shelter and performing monthly health-checkups.
+
 ## List of queries to implement
 - [ ] Insert (Haad)
 - [ ] Delete (Bowen)
@@ -34,6 +37,7 @@
   - [ ] Aggregation with having (Bowen)
 - 17/03/2024 - 30/03/2024
   - [ ] Finish remaining queries
+  - [ ] Implement frontend (GUI)
 - 5/04/2024
   - [ ] Test run (Triston)
   - [ ] Submit URL (Triston)
