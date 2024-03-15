@@ -6,10 +6,10 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 ### Tech Stack: HTML, CSS, PHP, Oracle, SQL
 
 ## List of queries to implement
-- [ ] Insert (Haad)
+- [X] Insert (Haad)
 - [ ] Delete (Bowen)
 - [ ] Update (Bowen)
-- [ ] Selection (Haad)
+- [X] Selection (Haad)
 - [ ] Projection (Bowen)
 - [ ] Join (Haad)
 - [ ] Aggregation with group by (Bowen)
@@ -30,8 +30,8 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 - 15/03/2024
   - [ ] Create fully executable SQL script (Triston)
   - [ ] Determine which tables can be modified by users of the database (Triston)
-  - [ ] Pick a table to insert into and finish insert query (Haad)
-  - [ ] Pick a table to select from and finish insert query (Haad)
+  - [X] Pick a table to insert into and finish insert query (Haad)
+  - [X] Pick a table to select from and finish select query (Haad)
   - [ ] Pick a table to update and finish update query (Bowen)
   - [ ] Pick a table to delete from and finish delete query (Bowen)
   - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
