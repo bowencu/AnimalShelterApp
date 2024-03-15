@@ -18,7 +18,6 @@
 
 -->
 
-<!-- Haad: Everything in this php element remains unchanged, just change your cwl and dbpassword -->
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
@@ -53,30 +52,40 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 <!--This remains unchanged, just allows us to reset anything the user inserts -->
 <body>
-  <h2>Reset</h2> 
+  <h2>Reset</h2> <!-- Done, no change needed -->
   <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
-  <form method="POST" action="oracle-template.php"> // This will be unchanged, it just sets up our form
+  <form method="POST" action="main.php"> 
 		<input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
 		<p><input type="submit" value="Reset" name="reset"></p>
-	</form>
+  </form>
 
 	<hr />
 
-	<h2>Insert Values into AnimalHospital</h2> // Done by Haad
-	<form method="POST" action="oracle-template.php">
-    <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
-    Hospital Address: <input type="text" name="hospitalAddress"> <br /><br/>
-    Name: <input type="text" name="name"> <br /><br/>
+	<!--
+	Finished by Haad, using this insert query from M2:
+	INSERT 
+	INTO AnimalStayInfo(animalName, animalBranchTag)
+	VALUES (‘Bella’, ‘zxcvbnmas’);
+	-->
+	<h2>Insert Values into AnimalStayInfo</h2> 
+	<form method="POST" action="main.php">
+    	<input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
+
+    	Animal Name: 	   <input type="text" name="animalName"> <br /><br/>
+    	Animal Branch Tag: <input type="text" name="animalBranchTag"> <br /><br/>
 
 		<input type="submit" value="Insert" name="insertSubmit"></p>
 	</form>
 
 	<hr />
 
-	<h2>Update Name in DemoTable</h2> // Done by Bowen
+	
+
+
+	<h2>Update Name in DemoTable</h2>
 	<p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
-	<form method="POST" action="oracle-template.php">
+	<form method="POST" action="main.php">
 		<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
 		Old Name: <input type="text" name="oldName"> <br /><br />
 		New Name: <input type="text" name="newName"> <br /><br />
@@ -86,16 +95,28 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
-	<h2>Count the Tuples in ____</h2>
-	<form method="GET" action="oracle-template.php">
+	<!--
+		Use this query for debugging to check if your delete and insert statements are working.
+		The number of entries in the chosen table should increase and decrease appropriately.
+
+		For example, if we perform three insert queries into AnimalStayInfo,
+		the count should increase be 3.
+	-->
+	<h2>Count the Tuples in AnimalStayInfo</h2>
+	<form method="GET" action="main.php">
 		<input type="hidden" id="countTupleRequest" name="countTupleRequest">
 		<input type="submit" name="countTuples"></p>
 	</form>
 
 	<hr />
 
-	<h2>Display Tuples in ____</h2>
-	<form method="GET" action="oracle-template.php">
+	<!--
+	Finished by Haad using this query:
+	SELECT *
+	FROM AnimalStayInfo
+	-->
+	<h2>Display tuples in AnimalStayInfo</h2>
+	<form method="GET" action="main.php">
 		<input type="hidden" id="displayTuplesRequest" name="displayTuplesRequest">
 		<input type="submit" name="displayTuples"></p>
 	</form>
@@ -194,6 +215,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		// Your username is ora_(CWL_ID) and the password is a(student number). For example,
 		// ora_platypus is the username and a12345678 is the password.
 		// $db_conn = oci_connect("ora_cwl", "a12345678", "dbhost.students.cs.ubc.ca:1522/stu");
+		// dbuser, dbpassword and dbserver are already specified in the config
 		$db_conn = oci_connect($config["dbuser"], $config["dbpassword"], $config["dbserver"]);
 
 		if ($db_conn) {
@@ -239,39 +261,58 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	function handleInsertRequest() // NEEDS TO BE CHANGED
+	/*
+	INSERT
+	INTO AnimalStayInfo(animalName, animalBranchTag)
+	VALUES (‘Bella’, ‘zxcvbnmas’);
+	*/
+	function handleInsertRequest() // Finished by Haad
 	{
 		global $db_conn;
 
 		//Getting the values from user and insert data into the table
 		$tuple = array(
-			":bind1" => $_POST['insNo'],
-			":bind2" => $_POST['insName']
+			":bind1" => $_POST['Bella'],
+			":bind2" => $_POST['zxcvbnmas']
 		);
 
 		$alltuples = array(
 			$tuple
 		);
 
-		executeBoundSQL("insert into demoTable values (:bind1, :bind2)", $alltuples);
+		executeBoundSQL("insert into AnimalStayInfo(animalName, animalBranchTag) values (:bind1, :bind2)", $alltuples);
 		oci_commit($db_conn);
 	}
 
+	
 	function handleCountRequest() // NEEDS TO BE CHANGED
 	{
 		global $db_conn;
 
-		$result = executePlainSQL("SELECT Count(*) FROM demoTable");
+		$result = executePlainSQL("SELECT Count(*) FROM AnimalStayInfo");
 
 		if (($row = oci_fetch_row($result)) != false) {
-			echo "<br> The number of tuples in demoTable: " . $row[0] . "<br>";
+			echo "<br> The number of tuples in AnimalStayInfo: " . $row[0] . "<br>";
 		}
 	}
 
-	function handleDisplayRequest() // NEEDS TO BE CHANGED
+	// How to select specific columns/attributes? Does
+	function handleProjectRequest() 
 	{
 		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM demoTable");
+		// One option is to hard-code the attributes we want from the projection
+		$result = executePlainSQL("SELECT animalBranchTag FROM AnimalStayInfo"); // this line will be different from the display request
+		printResult($result);
+	}
+
+	/*
+	SELECT *
+	FROM AnimalStayInfo
+	*/
+	function handleDisplayRequest() // Finished by Haad
+	{
+		global $db_conn;
+		$result = executePlainSQL("SELECT * FROM AnimalStayInfo");
 		printResult($result);
 	}
 
@@ -279,6 +320,15 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
 	function handlePOSTRequest()
 	{
+		/*	
+		List of queries associated with POST request:
+		- Insert
+		- Update
+		- 
+		-
+		-
+
+		*/
 		if (connectToDB()) {
 			if (array_key_exists('resetTablesRequest', $_POST)) {
 				handleResetRequest();
@@ -296,17 +346,27 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
 	function handleGETRequest()
 	{
-		if (connectToDB()) {
-			if (array_key_exists('countTuples', $_GET)) {
-				handleCountRequest();
-			} elseif (array_key_exists('displayTuples', $_GET)) {
-				handleDisplayRequest();
-			}
+		/*	
+		Typically the queries associated the GET request will have the line printResult($result); at the end of their handlers.
 
+		List of queries associated with GET request:
+		- Select 
+		- Project 
+		*/
+		if (connectToDB()) {
+			if (array_key_exists('countTuples', $_GET)) { // count handler
+				handleCountRequest(); // (optional) count statement, was already included in the template file
+			} elseif (array_key_exists('displayTuples', $_GET)) { // select handler
+				handleDisplayRequest(); // Select statement
+			} elseif (array_key_exists('projectTuples', $_GET)) { // project handler
+				handleProjectRequest(); 
+			} 
 			disconnectFromDB();
 		}
 	}
-
+    /*
+	GET and POST ids have to match the ids specified above in the queries
+	*/
 	if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
 		handlePOSTRequest();
 	} else if (isset($_GET['countTupleRequest']) || isset($_GET['displayTuplesRequest'])) {
