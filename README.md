@@ -31,7 +31,7 @@ Our project models a pet adoption system managed by an animal shelter. This shel
   - [ ] Create fully executable SQL script (Triston)
   - [ ] Determine which tables can be modified by users of the database (Triston)
   - [ ] Pick a table to insert into and finish insert query (Haad)
-  - [ ] Pick a table to select from and finish insert query (Haad)
+  - [ ] Pick a table to select from and finish select query (Haad)
   - [ ] Pick a table to update and finish update query (Bowen)
   - [ ] Pick a table to delete from and finish delete query (Bowen)
   - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
