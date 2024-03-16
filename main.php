@@ -83,14 +83,21 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	
 
 
-	<h2>Update Name in DemoTable</h2>
-	<p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
+	<!--
+	Finished by Bowen, using this update query:
+	UPDATE AnimalMedicalHistory
+	SET animalName = 'Bowen',
+		administeringHospital = 'Vancouver General Hospital'
+	WHERE medicalRecordNumber = '123'
+	-->
+	<h2>Update Animal Name/Administering Hospital in MedicalHistory</h2>
+	<p>The medical record number must match a record in our database. Otherwise, the update statement will not do anything.</p>
 
 	<form method="POST" action="main.php">
 		<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-		Old Name: <input type="text" name="oldName"> <br /><br />
-		New Name: <input type="text" name="newName"> <br /><br />
-
+		Medical Record Number: <input type="text" name="medicalRecordNumber"> <br /><br />
+		New Animal Name: <input type="text" name="animalName"> <br /><br />
+		New Administering Hospital: <input type="text" name="administeringHospital"> <br /><br />
 		<input type="submit" value="Update" name="updateSubmit"></p>
 	</form>
 
@@ -242,13 +249,15 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
   {
 		global $db_conn;
 
-		$old_name = $_POST['oldName'];
-		$new_name = $_POST['newName'];
+		$medical_record_number = $_POST['medicalRecordNumber'];
+		$animal_name = $_POST['animalName'];
+		$administering_hospital = $_POST['administeringHospital'];
 
-		// you need the wrap the old name and new name values with single quotations
-		executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
-		oci_commit($db_conn);
+    // you need to wrap the medical record number, animal name, and administering hospital values with single quotations
+    executePlainSQL("UPDATE AnimalMedicalHistory SET animalName='" . $animal_name . "', administeringHospital='" . $administering_hospital . "' WHERE medicalRecordNumber='" . $medical_record_number . "'");
+    oci_commit($db_conn);
 	}
+
 
 	function handleResetRequest() // NEEDS TO BE CHANGED
 	{
