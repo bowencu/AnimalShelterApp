@@ -33,7 +33,7 @@ Our project models a pet adoption system managed by an animal shelter. This shel
   - [X] Pick a table to insert into and finish insert query (Haad)
   - [X] Pick a table to select from and finish select query (Haad)
   - [X] Pick a table to update and finish update query (Bowen)
-  - [] Pick a table to delete from and finish delete query (Bowen)
+  - [ ] Pick a table to delete from and finish delete query (Bowen)
   - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
 - 16/03/2024
   - [ ] Join (Haad)
