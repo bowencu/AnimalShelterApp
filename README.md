@@ -8,10 +8,10 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 ## List of queries to implement
 - [X] Insert (Haad)
 - [ ] Delete (Bowen)
-- [ ] Update (Bowen)
+- [X] Update (Bowen)
 - [X] Selection (Haad)
 - [ ] Projection (Bowen)
-- [ ] Join (Haad)
+- [X] Join (Haad)
 - [ ] Aggregation with group by (Bowen)
 - [ ] Aggregation with having (Bowen)
 - [ ] Nested Aggregation with Group By (Haad)
@@ -28,12 +28,12 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 
 ## Dates
 - 15/03/2024
-  - [ ] Create fully executable SQL script (Triston)
-  - [ ] Determine which tables can be modified by users of the database (Triston)
+  - [X] Create fully executable SQL script (Triston)
+  - [X] Determine which tables can be modified by users of the database (Triston)
   - [X] Pick a table to insert into and finish insert query (Haad)
   - [X] Pick a table to select from and finish select query (Haad)
-  - [ ] Pick a table to update and finish update query (Bowen)
-  - [ ] Pick a table to delete from and finish delete query (Bowen)
+  - [X] Pick a table to update and finish update query (Bowen)
+  - [] Pick a table to delete from and finish delete query (Bowen)
   - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
 - 16/03/2024
   - [ ] Join (Haad)
