@@ -54,3 +54,8 @@ Our project models a pet adoption system managed by an animal shelter. This shel
   - [ ] Debugging (all)
   - [ ] Test run (Triston)
   - [ ] Submit URL (Triston)
+  
+  
+  ## Resources
+  - https://www.students.cs.ubc.ca/~cs-304/resources/faq.html#php
+  
