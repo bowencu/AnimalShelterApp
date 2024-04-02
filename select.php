@@ -1,5 +1,5 @@
 <?php 
-include connection.php;
+include 'connection.php';
 $db_conn = getDatabaseConnection();
 
 function handleSelectRequest() {
