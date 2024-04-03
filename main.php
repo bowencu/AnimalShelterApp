@@ -18,9 +18,12 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 <head>
 	<title>CPSC 304: Animal Shelter App</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+	<h1>CPSC304: Animal Shelter Database</h1>
+	<hr />
 	<h2>Reset</h2>
 	<p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
 
@@ -29,6 +32,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		<input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
 		<p><input type="submit" value="Reset" name="reset"></p>
 	</form>
+
+	<hr />
 
 	<!-- ======================= BEGIN TABLE DROPDOWN ======================= -->
 	<h2>Choose a table to view</h2>
@@ -79,7 +84,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<form method="POST" action="main.php">
     	<input type="hidden" id="joinQueryRequest" name="joinQueryRequest">
     	Year of record:  <input type="text" name="year"> <br /><br/>
-		<input type="submit" value="Join and display" name="joinSubmit"></p>
+		<input type="submit" value="Display" name="joinSubmit"></p>
 	</form>
 	<!-- ======================= END JOIN ======================= -->	
 
@@ -87,18 +92,27 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<!-- ======================= BEGIN NESTED AGGREGATION WITH GROUP BY ======================= -->	
 	<h2>Nested aggregation with group by:</h2> 
-	<form method="POST" action="main.php">
-    	<input type="hidden" id="nestedAggregationQueryRequest" name="nestedAggregationQueryRequest">
-    	Year of record:  <input type="text" name="year"> <br /><br/>
-		<input type="submit" value="Display	" name="nestedAggregationSubmit"></p>
+	<form method="GET" action="main.php">
+    	<input type="hidden" id="nestedAggregationWithGroupByRequest" name="nestedAggregationWithGroupByRequest">
+		<input type="submit" value="Display" name="nestedAggregationWithGroupByRequestSubmit"></p>
 	</form>
 	<!-- ======================= END NESTED AGGREGATION WITH GROUP BYIN ======================= -->	
 
 	<hr />
 
 	<!-- ======================= BEGIN DIVISON ======================= -->	
-	<h2>Find the veterinarians who have worked at all the hospitals</h2> <!-- divison  -->
+	<!-- divison  
+	tables used:
+	VeterinarianWorkInfo
+	VeterinarianInfo
+	AnimalHospital
+	-->
+	<h2>Find the veterinarians (by their SIN) who have worked at all the hospitals</h2> 
 	<p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
+	<form method="GET" action="main.php">
+		<input type="hidden" id="divisionQueryRequest" name="divisionQueryRequest">
+		<input type="submit" name="divisionSubmit"></p>
+	</form>
 	<!-- ======================= END DIVISON ======================= -->	
 
 	<hr />
@@ -245,12 +259,12 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	function printJoinResult($result)
 	{ //prints results from a select statement
-		echo "<br>Retrieved data from table demoTable:<br>";
+		// echo "<br>Retrieved data from table demoTable:<br>";
 		echo "<table>";
-		echo "<tr><th>ID</th><th>Name</th></tr>";
+		echo "<tr><th>animalName</th><th>medicalRecordNumber</th></tr>";
 
 		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			echo "<tr><td>" . $row["YEAROFRECORD "] . "</td><td>"; //or just use "echo $row[0]"
+			echo "<tr><td>" . $row["ANIMALNAME"] . "</td><td>" . $row["MEDICALRECORDNUMBER"] . "</td><td>"; //or just use "echo $row[0]"
 		}
 
 		echo "</table>";
@@ -307,17 +321,17 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         echo "Successfully updated medical history for '$animal_name'";
     }
 
-	function handleResetRequest()
-	{
-		global $db_conn;
-		// Drop old table
-		executePlainSQL("DROP TABLE demoTable");
+	// function handleResetRequest()
+	// {
+	// 	global $db_conn;
+	// 	// Drop old table
+	// 	executePlainSQL("DROP TABLE demoTable");
 
-		// Create new table
-		echo "<br> creating new table <br>";
-		executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
-		oci_commit($db_conn);
-	}
+	// 	// Create new table
+	// 	echo "<br> creating new table <br>";
+	// 	executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
+	// 	oci_commit($db_conn);
+	// }
 
 	function handleInsertRequest()
 	{
@@ -349,26 +363,95 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         // );
 
 		$year = $_POST['year'];
-
         // $alltuples = array(
         //     $tuple
         // );
 
         // this query works in sqlplus in the terminal for a specific yearOfRecord value
-        $result = executePlainSQL("SELECT * FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName AND H.yearOfrRecord > " . $year . "");
+        $result = executePlainSQL("SELECT O.animalName, H.medicalRecordNumber FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName AND H.yearOfRecord > " . $year . "");
         printJoinResult($result);
 		oci_commit($db_conn);
+		
     }
 
-	// function handleNestedAggregationWithGroupByRequest() 
-	// {
-	// 	global $db_conn;
-	// }
+	// Find the veterinarians (by SIN) who work at the fewest number of hospitals
+	/*
+	Using VeterinarianInfo table:
 
-	// function handleDivisonRequest() 
-	// {
-	// 	global $db_conn;
-	// }
+	GROUP BY 
+	*/
+	function handleNestedAggregationWithGroupByRequest() 
+	{
+		global $db_conn;
+		$nested_agg_query = "SELECT vetSIN
+		FROM (
+			SELECT vetSIN, COUNT(DISTINCT hospitalAddress) AS hospital_count
+			FROM VeterinarianWorkInfo
+			GROUP BY vetSIN
+		) hospital_counts
+		WHERE hospital_count = (
+			SELECT MIN(hospital_count)
+			FROM (
+				SELECT COUNT(DISTINCT hospitalAddress) AS hospital_count
+				FROM VeterinarianWorkInfo
+				GROUP BY vetSIN
+			) min_hospital_counts
+		)";
+
+		// SELECT vetSIN FROM (SELECT vetSIN, COUNT(DISTINCT hospitalAddress) AS hospital_count FROM VeterinarianWorkInfo GROUP BY vetSIN) hospital_counts WHERE hospital_count = (SELECT MIN(hospital_count) FROM (SELECT COUNT(DISTINCT hospitalAddress) AS hospital_count FROM VeterinarianWorkInfo GROUP BY vetSIN) min_hospital_counts);
+
+		$result = executePlainSQL($nested_agg_query);
+		printNestedAggregationResult($result);
+		oci_commit($db_conn);
+	}
+	
+
+	function printNestedAggregationResult($result) 
+	{
+		echo "<br>Retrieved result from nested aggregation with group by:<br>";
+		echo "<table>";
+		echo "<tr><th>vetSIN</th></tr>";
+
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+			echo "<tr><td>" . $row["VETSIN"] . "</td></tr>"; //or just use "echo $row[0]"
+		}
+
+		echo "</table>";
+	}
+
+	// Find the veterinarians (from VeterinarianInfo) who have worked at all hospitals (from AnimalHospital)
+	function handleDivisionRequest() 
+	{
+		global $db_conn;
+		$division_query = "SELECT DISTINCT VI.vetSIN, VI.name
+		FROM VeterinarianInfo VI
+		WHERE NOT EXISTS (
+			SELECT AH.hospitalAddress
+			FROM AnimalHospital AH
+			WHERE NOT EXISTS (
+				SELECT *
+				FROM VeterinarianWorkInfo VW
+				WHERE VW.vetSIN = VI.vetSIN
+				AND VW.hospitalAddress = AH.hospitalAddress
+			)
+		)";
+		$result = executePlainSQL($division_query);
+		printDivisionResult($result);
+		oci_commit($db_conn);
+	}
+
+	function printDivisionResult($result)
+	{ //prints results from a select statement
+		echo "<br>Retrieved division result:<br>";
+		echo "<table>";
+		echo "<tr><th>vetSIN</th><th>Name</th></tr>";
+
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+			echo "<tr><td>" . $row["VETSIN"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
+		}
+
+		echo "</table>";
+	}
 
 	function handleDisplayTablesRequest()
 	{
@@ -389,9 +472,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	function handlePOSTRequest()
 	{
 		if (connectToDB()) {
-			if (array_key_exists('resetTablesRequest', $_POST)) {
-				handleResetRequest();
-			} else if (array_key_exists('updateQueryRequest', $_POST)) {
+			if (array_key_exists('updateQueryRequest', $_POST)) {
 				handleUpdateRequest();
 			} else if (array_key_exists('insertQueryRequest', $_POST)) {
 				handleInsertRequest();
@@ -412,19 +493,19 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		if (connectToDB()) {
 			if (array_key_exists('displayTables', $_GET)) {
 				handleDisplayTablesRequest();
-			}
-			
-			// elseif (array_key_exists('displayTables', $_GET)) {
-			// 	handleNestedAggregationWithGroupByRequest();
-			// } 
+			} else if (array_key_exists('divisionQueryRequest', $_GET)) {
+				handleDivisionRequest();
+			} elseif (array_key_exists('nestedAggregationWithGroupByRequest', $_GET)) {
+				handleNestedAggregationWithGroupByRequest();
+			} 
 
 			disconnectFromDB();
 		}
 	}
 
-	if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit'])) {
+	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit'])) {
 		handlePOSTRequest();
-	} else if (isset($_GET['displayTablesRequest']))  {
+	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']))  {
 		handleGETRequest();
 	}
 

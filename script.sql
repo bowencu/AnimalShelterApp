@@ -392,10 +392,16 @@ CREATE TABLE VeterinarianWorkInfo(
 );
 
 INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
-VALUES ('11111111', '123 Main Street, Cityville');
+VALUES ('11111111', '123 Main Street, Cityville'); 
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('11111111', '789 Pine Road, Rural Town'); 
 
 INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
 VALUES ('22222222', '456 Oak Avenue, Suburbia');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('22222222', '101 Maple Lane, Seaside City');
 
 INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
 VALUES ('33333333', '789 Pine Road, Rural Town');
@@ -405,6 +411,45 @@ VALUES ('44444444', '101 Maple Lane, Seaside City');
 
 INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
 VALUES ('55555555', '555 Elm Street, Metroville');
+
+
+-- These are added for vet with id 55555555 to be displayed in the division result
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('55555555', '123 Main Street, Cityville');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('55555555', '456 Oak Avenue, Suburbia');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('55555555', '789 Pine Road, Rural Town');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('55555555', '101 Maple Lane, Seaside City');
+
+-- These are added for vet with id 44444444 to be displayed in the division result
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('44444444', '123 Main Street, Cityville');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('44444444', '456 Oak Avenue, Suburbia');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('44444444', '789 Pine Road, Rural Town');
+
+INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress)
+VALUES ('44444444', '555 Elm Street, Metroville');
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 CREATE TABLE Owner1(
