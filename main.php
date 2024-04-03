@@ -285,17 +285,27 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_close($db_conn);
 	}
 
-	function handleUpdateRequest()
-	{
-		global $db_conn;
+	function handleUpdateRequest() {
+        global $db_conn;
 
-		$old_name = $_POST['oldName'];
-		$new_name = $_POST['newName'];
+        $medical_record_number = $_POST['medicalRecordNumber'];
+        $animal_name = $_POST['animalName'];
+        $administering_hospital = $_POST['administeringHospital'];
 
-		// you need the wrap the old name and new name values with single quotations
-		executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
-		oci_commit($db_conn);
-	}
+        $animal_exists = executePlainSQL("SELECT COUNT(*) FROM AnimalHelpedAdopt2 WHERE name = '$animal_name'");
+        $row = oci_fetch_array($animal_exists, OCI_BOTH);
+
+        // If animalName does not exist, do nothing and return
+        if ($row[0] == 0) {
+            echo "Animal with name '$animal_name' does not exist in the referenced table. Update query aborted.";
+            return;
+        }
+
+        // If animalName exists, proceed with the update query
+        executePlainSQL("UPDATE AnimalMedicalHistory SET animalName='$animal_name', administeringHospital='$administering_hospital' WHERE medicalRecordNumber='$medical_record_number'");
+        oci_commit($db_conn);
+        echo "Successfully updated medical history for '$animal_name'";
+    }
 
 	function handleResetRequest()
 	{
@@ -329,25 +339,26 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	// function handleJoinRequest()
-    // {
-    //     global $db_conn;
+	function handleJoinRequest()
+    {
+        global $db_conn;
 
-    //     // Getting the values from user and insert data into the table
-    //     $tuple = array(
-    //         ":bind1" => $_POST['year']
-    //     );
+        // Getting the values from user and insert data into the table
+        // $tuple = array(
+        //     ":bind1" => $_POST['year']
+        // );
 
-    //     $alltuples = array(
-    //         $tuple
-    //     );
-    //     echo $tuple[":bind1"]; // works, prints out value that was posted
+		$year = $_POST['year'];
 
-    //     // this query works in sqlplus in the terminal for a specific yearOfRecord value
-    //     $result = executePlainSQL("SELECT * FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName");
-    //     printJoinResult($result);
-	// 	oci_commit($db_conn);
-    // }
+        // $alltuples = array(
+        //     $tuple
+        // );
+
+        // this query works in sqlplus in the terminal for a specific yearOfRecord value
+        $result = executePlainSQL("SELECT * FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName AND H.yearOfrRecord > " . $year . "");
+        printJoinResult($result);
+		oci_commit($db_conn);
+    }
 
 	// function handleNestedAggregationWithGroupByRequest() 
 	// {
@@ -370,7 +381,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		$result = executePlainSQL("SELECT * FROM " . $table_name . " ORDER BY " . $column . " ASC");
 
 		$str = "table <b>" . $table_name . "</b>";
-		printResult($result, $str);
+		printTables($result, $str);
 	}
 
 	// HANDLE ALL POST ROUTES
@@ -384,10 +395,9 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleUpdateRequest();
 			} else if (array_key_exists('insertQueryRequest', $_POST)) {
 				handleInsertRequest();
+			} else if (array_key_exists('joinQueryRequest', $_POST)) {
+				handleJoinRequest();
 			} 
-			// else if (array_key_exists('joinQueryRequest', $_POST)) {
-			// 	handleJoinRequest();
-			// } 
 
 			disconnectFromDB();
 		}
