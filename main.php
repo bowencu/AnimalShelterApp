@@ -10,13 +10,8 @@ $config["dbuser"] = "ora_hbhutta3";			// change "cwl" to your own CWL
 $config["dbpassword"] = "a78030533";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
-
 $success = true;	// keep track of errors so page redirects only if there are no errors
-
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
-
-// The next tag tells the web server to stop parsing the text as PHP. Use the
-// pair of tags wherever the content switches to PHP
 ?>
 
 <html>
@@ -64,6 +59,20 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
+	<!-- ======================= BEGIN UPDATE ======================= -->
+    <h2>Update Animal Name/Administering Hospital in MedicalHistory</h2>
+    <p>The medical record number must match a record in our database and the animal name must refer to an existing animal. Otherwise, the update statement will not do anything.</p>
+
+    <form method="POST" action="main.php">
+        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+        Medical Record Number: <input type="text" name="medicalRecordNumber"> <br /><br />
+        New Animal Name: <input type="text" name="animalName"> <br /><br />
+        New Administering Hospital: <input type="text" name="administeringHospital"> <br /><br />
+        <input type="submit" value="Update" name="updateSubmit"></p>
+    </form>
+	<!-- ======================= END UPDATE ======================= -->
+
+    <hr />
 
 	<!-- ======================= BEGIN JOIN ======================= -->	
 	<h2>Finding the medical history of an owned animal after a given year of record:</h2> 
@@ -93,7 +102,6 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<!-- ======================= END DIVISON ======================= -->	
 
 	<hr />
-
 
 	<?php
 	// The following code will be parsed as PHP
@@ -248,42 +256,6 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		echo "</table>";
 	}
 
-	function printHospitals($result)
-	{ //prints results from a select statement
-		echo "<br>Displaying the hospitals currently in the database...<br>";
-		echo "<table>";
-		echo "<tr><th>Name</th><th>Hospital Address</th></tr>";
-
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			// echo $row[0]
-			echo "<tr><td>" . $row["NAME"] . "</td><td>" . $row["HOSPITALADDRESS"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
-
-		echo "</table>";
-
-		echo "<script>";
-    	echo "alert('Hospitals have been displayed successfully!');";
-    	echo "</script>";
-	}
-
-	function printVeterinarians($result)
-	{ //prints results from a select statement
-		echo "<br>Displaying the veterinarians currently in the database...<br>";
-		echo "<table>";
-		echo "<tr><th>Veterinarian SIN</th><th>Specialty</th><th>Name</th></tr>";
-
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			// echo $row[0]
-			echo "<tr><td>" . $row["VETSIN"] . "</td><td>" . $row["SPECIALTY"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
-
-		echo "</table>";
-
-		echo "<script>";
-    	echo "alert('Veterinarians have been displayed successfully!');";
-    	echo "</script>";
-	}
-
 	function connectToDB()
 	{
 		global $db_conn;
@@ -357,125 +329,48 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_commit($db_conn);
 	}
 
-	function handleDisplayHospitalsRequest() 
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM AnimalHospital");
-		printHospitals($result);
-	}
+	// function handleJoinRequest()
+    // {
+    //     global $db_conn;
 
-	function handleDisplayVeterinariansRequest() 
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM VeterinarianInfo");
-		printVeterinarians($result);
-	}
+    //     // Getting the values from user and insert data into the table
+    //     $tuple = array(
+    //         ":bind1" => $_POST['year']
+    //     );
 
-	function printHospitals($result)
-	{ //prints results from a select statement
-		echo "<br>Hospitals currently in the database:<br>";
-		echo "<table>";
-		echo "<tr><th>Hospital Name</th><th>Hospital Address</th></tr>";
+    //     $alltuples = array(
+    //         $tuple
+    //     );
+    //     echo $tuple[":bind1"]; // works, prints out value that was posted
 
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			echo "<tr><td>" . $row["NAME"] . "</td><td>" . $row["HOSPITALADDRESS"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
+    //     // this query works in sqlplus in the terminal for a specific yearOfRecord value
+    //     $result = executePlainSQL("SELECT * FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName");
+    //     printJoinResult($result);
+	// 	oci_commit($db_conn);
+    // }
 
-		echo "</table>";
-	}
+	// function handleNestedAggregationWithGroupByRequest() 
+	// {
+	// 	global $db_conn;
+	// }
 
-	function printVeterinarians($result)
-	{ //prints results from a select statement
-		echo "<br>Veterinarians currently in the database:<br>";
-		echo "<table>";
-		echo "<tr><th>Veterinarian SIN</th><th>Specialty</th><th>Name</th></tr>";
-
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			echo "<tr><td>" . $row["VETSIN"] . "</td><td>" . $row["SPECIALTY"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
-
-		echo "</table>";
-	}
-
-	function handleCountRequest()
-	{
-		global $db_conn;
-
-		$result = executePlainSQL("SELECT Count(*) FROM demoTable");
-
-		if (($row = oci_fetch_row($result)) != false) {
-			echo "<br> The number of tuples in demoTable: " . $row[0] . "<br>";
-		}
-	}
-
-	function handleDisplayRequest()
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM demoTable");
-		printResult($result);
-	}
-
-	function handleDisplayHospitalsRequest() 
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM AnimalHospital");
-		printHospitals($result);
-	}
-
-	function handleDisplayVeterinariansRequest() 
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM VeterinarianInfo");
-		printVeterinarians($result);
-	}
-
-	function handleSelectRequest() 
-	{
-		global $db_conn;
-
-	}
-
-	function handleJoinRequest()
-    {
-        global $db_conn;
-
-        // Getting the values from user and insert data into the table
-        $tuple = array(
-            ":bind1" => $_POST['year']
-        );
-
-        $alltuples = array(
-            $tuple
-        );
-        echo $tuple[":bind1"]; // works, prints out value that was posted
-
-        // this query works in sqlplus in the terminal for a specific yearOfRecord value
-        $result = executePlainSQL("SELECT * FROM AnimalMedicalHistory H, OwnedAnimal O WHERE H.animalName = O.animalName");
-        printJoinResult($result);
-		// oci_commit($db_conn);
-    }
-
-	function handleNestedAggregationWithGroupByRequest() 
-	{
-		global $db_conn;
-	}
-
-	function handleDivisonRequest() 
-	{
-		global $db_conn;
-	}
+	// function handleDivisonRequest() 
+	// {
+	// 	global $db_conn;
+	// }
 
 	function handleDisplayTablesRequest()
 	{
 		global $db_conn;
-		$table = $_GET['tableName'];
+		$table_name = $_GET['tableName'];
 
-		$query = executePlainSQL("SELECT * FROM " . $table);
+
+		$result = executePlainSQL("SELECT * FROM " . $table_name);
 		$column = oci_field_name($result, 1);
-		$query = executePlainSQL("SELECT * FROM " . $table . " ORDER BY " . $column . " ASC");
+		$result = executePlainSQL("SELECT * FROM " . $table_name . " ORDER BY " . $column . " ASC");
 
-		$cmdstr = "table <b>" . $table . "</b>";
-		printTables($query, $cmdstr);
+		$str = "table <b>" . $table_name . "</b>";
+		printResult($result, $str);
 	}
 
 	// HANDLE ALL POST ROUTES
@@ -489,9 +384,10 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleUpdateRequest();
 			} else if (array_key_exists('insertQueryRequest', $_POST)) {
 				handleInsertRequest();
-			} else if (array_key_exists('joinQueryRequest', $_POST)) {
-				handleJoinRequest();
 			} 
+			// else if (array_key_exists('joinQueryRequest', $_POST)) {
+			// 	handleJoinRequest();
+			// } 
 
 			disconnectFromDB();
 		}
@@ -504,27 +400,21 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	function handleGETRequest()
 	{
 		if (connectToDB()) {
-			if (array_key_exists('countTuples', $_GET)) {
-				handleCountRequest();
-			} elseif (array_key_exists('displayHospitalsRequest', $_GET)) {
-				handleDisplayHospitalsRequest();
-			} elseif (array_key_exists('displayVeterinariansRequest', $_GET)) {
-				handleDisplayVeterinariansRequest();
-			} elseif (array_key_exists('displayTables', $_GET)) {
+			if (array_key_exists('displayTables', $_GET)) {
 				handleDisplayTablesRequest();
-			} elseif (array_key_exists('displayTables', $_GET)) {
-				handleDisplayTablesRequest();
-			} elseif (array_key_exists('displayTables', $_GET)) {
-				handleNestedAggregationWithGroupByRequest();
-			} 
+			}
+			
+			// elseif (array_key_exists('displayTables', $_GET)) {
+			// 	handleNestedAggregationWithGroupByRequest();
+			// } 
 
 			disconnectFromDB();
 		}
 	}
 
-	if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['insertSubmit'])) {
+	if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit'])) {
 		handlePOSTRequest();
-	} else if (isset($_GET['countTupleRequest']) || isset($_GET['displayHospitalsRequest']) || isset($_GET['displayVeterinariansRequest']) || isset($_GET['displayTablesRequest']))  {
+	} else if (isset($_GET['displayTablesRequest']))  {
 		handleGETRequest();
 	}
 
