@@ -18,22 +18,48 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 <head>
 	<title>CPSC 304: Animal Shelter App</title>
-	<link rel="stylesheet" href="styles.css">
+	<style>
+        body {
+			font-family: Arial, Helvetica, sans-serif;
+			background-color: #f9f9f9; /* Light gray background */
+			margin: 0; /* Remove default margin */
+			padding: 20px; /* Add some padding for content */
+			color: #333; /* Dark text color */
+			line-height: 1.6; /* Improved readability */
+		}
+
+		.container {
+			max-width: 800px; /* Limit content width */
+			margin: 0 auto; /* Center content */
+		}
+
+		h1 {
+			font-size: 28px; /* Larger heading size */
+			color: #004d40; /* Dark green heading color */
+			margin-bottom: 20px; /* Add some space below heading */
+		}
+
+		p {
+			font-size: 16px; /* Normal paragraph font size */
+			margin-bottom: 16px; /* Add some space below paragraphs */
+			color: #666; /* Dark gray paragraph color */
+		}
+
+    </style>
 </head>
 
 <body>
 	<h1>CPSC304: Animal Shelter Database</h1>
 	<hr />
-	<h2>Reset</h2>
-	<p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
+	<!-- <h2>Reset</h2> -->
+	<!-- <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p> -->
 
-	<form method="POST" action="main.php">
-		<!-- "action" specifies the file or page that will receive the form data for processing. As with this example, it can be this same file. -->
+	<!-- <form method="POST" action="main.php">
 		<input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
 		<p><input type="submit" value="Reset" name="reset"></p>
-	</form>
+	</form> -->
 
-	<hr />
+	<!-- <hr /> -->
 
 	<!-- ======================= BEGIN TABLE DROPDOWN ======================= -->
 	<h2>Choose a table to view</h2>
@@ -73,14 +99,16 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         Medical Record Number: <input type="text" name="medicalRecordNumber"> <br /><br />
         New Animal Name: <input type="text" name="animalName"> <br /><br />
         New Administering Hospital: <input type="text" name="administeringHospital"> <br /><br />
+        Current Year: <input type="text" name="yearOfRecord"> <br /><br />
         <input type="submit" value="Update" name="updateSubmit"></p>
     </form>
-	<!-- ======================= END UPDATE ======================= -->
+    <!-- ======================= END UPDATE ======================= -->
 
     <hr />
 
 	<!-- ======================= BEGIN JOIN ======================= -->	
-	<h2>Finding the medical history of an owned animal after a given year of record:</h2> 
+	<h2>Find the animals whose medical history was recorded after the given year.</h2>
+	<p><i>Join</i></p> 
 	<form method="POST" action="main.php">
     	<input type="hidden" id="joinQueryRequest" name="joinQueryRequest">
     	Year of record:  <input type="text" name="year"> <br /><br/>
@@ -91,7 +119,9 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<hr />
 
 	<!-- ======================= BEGIN NESTED AGGREGATION WITH GROUP BY ======================= -->	
-	<h2>Nested aggregation with group by:</h2> 
+	<!-- <h2>Nested aggregation with group by:</h2>  -->
+	<h2>Find the SINs of the veterinarians who have worked at the fewest number of hospitals.</h2>
+	<p><i>Nested aggregation with group by</i></p>
 	<form method="GET" action="main.php">
     	<input type="hidden" id="nestedAggregationWithGroupByRequest" name="nestedAggregationWithGroupByRequest">
 		<input type="submit" value="Display" name="nestedAggregationWithGroupByRequestSubmit"></p>
@@ -108,7 +138,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	AnimalHospital
 	-->
 	<h2>Find the veterinarians (by their SIN) who have worked at all the hospitals</h2> 
-	<p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
+	<p><i>Division</i></p>
 	<form method="GET" action="main.php">
 		<input type="hidden" id="divisionQueryRequest" name="divisionQueryRequest">
 		<input type="submit" name="divisionSubmit"></p>
@@ -300,26 +330,30 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	}
 
 	function handleUpdateRequest() {
-        global $db_conn;
-
-        $medical_record_number = $_POST['medicalRecordNumber'];
-        $animal_name = $_POST['animalName'];
-        $administering_hospital = $_POST['administeringHospital'];
-
-        $animal_exists = executePlainSQL("SELECT COUNT(*) FROM AnimalHelpedAdopt2 WHERE name = '$animal_name'");
-        $row = oci_fetch_array($animal_exists, OCI_BOTH);
-
-        // If animalName does not exist, do nothing and return
-        if ($row[0] == 0) {
-            echo "Animal with name '$animal_name' does not exist in the referenced table. Update query aborted.";
-            return;
-        }
-
-        // If animalName exists, proceed with the update query
-        executePlainSQL("UPDATE AnimalMedicalHistory SET animalName='$animal_name', administeringHospital='$administering_hospital' WHERE medicalRecordNumber='$medical_record_number'");
-        oci_commit($db_conn);
-        echo "Successfully updated medical history for '$animal_name'";
-    }
+		global $db_conn;
+	
+		$medical_record_number = $_POST['medicalRecordNumber'];
+		$animal_name = $_POST['animalName'];
+		$administering_hospital = $_POST['administeringHospital'];
+		$year = $_POST['yearOfRecord'];
+	
+		$animal_exists = executePlainSQL("SELECT COUNT(*) FROM AnimalHelpedAdopt2 WHERE name = '$animal_name'");
+		$row = oci_fetch_array($animal_exists, OCI_BOTH);
+	
+		// If animalName does not exist, do nothing and return
+		if ($row[0] == 0) {
+			echo '<script>alert("Animal with name \'' . $animal_name . '\' does not exist in the referenced table. Update query aborted.");</script>';
+			// echo "Animal with name '$animal_name' does not exist in the referenced table. Update query aborted.";
+			return;
+		}
+	
+		// If animalName exists, proceed with the update query
+		executePlainSQL("UPDATE AnimalMedicalHistory SET animalName='$animal_name', administeringHospital='$administering_hospital', yearOfRecord='$year' WHERE medicalRecordNumber='$medical_record_number'");
+		oci_commit($db_conn);
+		echo '<script>alert("Successfully updated medical history for \'' . $animal_name . '\'");</script>';
+		echo "Successfully updated medical history for '$animal_name'";
+	}
+	
 
 	// function handleResetRequest()
 	// {
@@ -351,6 +385,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 		executeBoundSQL("INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress) VALUES (:bind1, :bind2)", $alltuples);
 		oci_commit($db_conn);
+		echo '<script>alert("Successfully created a new veterinarian!");</script>';
+		// echo "Successfully updated medical history for '$animal_name'";
 	}
 
 	function handleJoinRequest()
