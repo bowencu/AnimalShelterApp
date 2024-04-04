@@ -497,7 +497,6 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		}
 
 		if (empty($selectedAttributes)) {
-			// If no attributes are selected, return all columns using wildcard *
 			$query = "SELECT * FROM AnimalHelpedAdopt2";
 		} else {
 			$query = "SELECT ";
@@ -509,37 +508,29 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 		printProjectionResult($result, $selectedAttributes);
 		oci_commit($db_conn);
-		echo '<script>alert("Successfully projected on attributes in AnimalHelpedAdopt2");</script>';
+		// echo '<script>alert("Successfully projected on attributes in AnimalHelpedAdopt2");</script>';
 	}
 
 	function printProjectionResult($result, $selectedAttributes)
 	{
-		// Check if there are any rows returned by the query
-		$numRows = oci_num_rows($result);
-		if ($numRows > 0) {
-			// Print table header with selected attribute names
-			echo "<table border='1'>";
+		echo "<br>Projection result:<br>";
+		echo "<table>";
+
+		echo "<tr>";
+		foreach ($selectedAttributes as $column) {
+			echo "<th>" . $column . "</th>";
+		}
+		echo "</tr>";
+	
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
 			echo "<tr>";
-			foreach ($selectedAttributes as $attribute) {
-				echo "<th>$attribute</th>";
+			foreach ($row as $val) {
+				echo "<td>" . $val . "</td>";
 			}
 			echo "</tr>";
-	
-			// Print each row of the result
-			while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS)) {
-				echo "<tr>";
-				foreach ($selectedAttributes as $attribute) {
-					echo "<td>" . $row[$attribute] . "</td>";
-				}
-				echo "</tr>";
-			}
-	
-			// Close the table
-			echo "</table>";
-		} else {
-			// If no rows were returned, print a message
-			echo "No records found.";
 		}
+	
+		echo "</table>";
 	}
 	
 
