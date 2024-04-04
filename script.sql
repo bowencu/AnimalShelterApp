@@ -330,7 +330,7 @@ VALUES ('Mountain Pet Haven', 'Wildlife Guardians Ltd', '34567890', '2023-05-05'
 
 CREATE TABLE AnimalMedicalHistory(
 	medicalRecordNumber char(9),
-	animalName varchar(200) UNIQUE,
+	animalName varchar(200),
 	administeringHospital varchar(200),
 	yearOfRecord int,
 PRIMARY KEY (medicalRecordNumber),
