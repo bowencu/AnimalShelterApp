@@ -6,8 +6,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_hbhutta3";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a78030533";	// change to 'a' + your student number
+$config["dbuser"] = "ora_cuibowen";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a49604481";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 $success = true;	// keep track of errors so page redirects only if there are no errors
@@ -71,6 +71,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		</select>
 		<p><input type="submit" name="displayTables"></p>
 	</form>
+
 	<!-- ======================= END TABLE DROPDOWN ======================= -->
 
 	<hr />
@@ -103,6 +104,19 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         <input type="submit" value="Update" name="updateSubmit"></p>
     </form>
     <!-- ======================= END UPDATE ======================= -->
+    <hr />
+
+
+	<!-- ======================= BEGIN DELETE ======================= -->
+	<h2>Delete Animal From Database</h2>
+    <p>The animal name must match a record in our database. Otherwise, the update statement will not do anything.</p>
+
+    <form method="POST" action="main.php">
+        <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
+        Animal Name: <input type="text" name="animalName"> <br /><br />
+        <input type="submit" value="Delete" name="deleteSubmit"></p>
+    </form>
+    <!-- ======================= END DELETE ======================= -->
 
     <hr />
 
@@ -353,6 +367,27 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		echo '<script>alert("Successfully updated medical history for \'' . $animal_name . '\'");</script>';
 		echo "Successfully updated medical history for '$animal_name'";
 	}
+
+
+	function handleDeleteRequest() {
+		global $db_conn;
+	
+		$animal_name = $_POST['animalName'];
+	
+		$animal_exists = executePlainSQL("SELECT COUNT(*) FROM AnimalHelpedAdopt2 WHERE name = '$animal_name'");
+		$row = oci_fetch_array($animal_exists, OCI_BOTH);
+	
+		// If animalName does not exist, do nothing and return
+		if ($row[0] == 0) {
+			echo '<script>alert("Animal with name \'' . $animal_name . '\' does not exist in the database. Delete query aborted.");</script>';
+			return;
+		}
+	
+		// If animalName exists, proceed with the delete query
+		executePlainSQL("DELETE FROM AnimalHelpedAdopt2 WHERE name='$animal_name'");
+		oci_commit($db_conn);
+		echo '<script>alert("Successfully deleted animal \'' . $animal_name . '\'");</script>';
+	}
 	
 
 	// function handleResetRequest()
@@ -502,6 +537,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		$str = "table <b>" . $table_name . "</b>";
 		printTables($result, $str);
 	}
+	
 
 	// HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
@@ -514,7 +550,9 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleInsertRequest();
 			} else if (array_key_exists('joinQueryRequest', $_POST)) {
 				handleJoinRequest();
-			} 
+			} else if (array_key_exists('deleteQueryRequest', $_POST)) {
+				handleDeleteRequest();
+			}
 
 			disconnectFromDB();
 		}
@@ -533,13 +571,15 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleDivisionRequest();
 			} elseif (array_key_exists('nestedAggregationWithGroupByRequest', $_GET)) {
 				handleNestedAggregationWithGroupByRequest();
-			} 
+			} elseif (array_key_exists('projectionQueryRequest', $_GET)) {
+				handleProjectionRequest($_GET['tableName']);
+			}
 
 			disconnectFromDB();
 		}
 	}
 
-	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit'])) {
+	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit'])) {
 		handlePOSTRequest();
 	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']))  {
 		handleGETRequest();
