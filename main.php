@@ -144,6 +144,18 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
+	<!-- ======================= BEGIN AGGREGATION WITH GROUP BY ======================= -->	
+	<h2>Find the number of animal medical records per year.</h2>
+	<p><i>Aggregation with group by</i></p>
+	<form method="GET" action="main.php">
+    	<input type="hidden" id="aggregationWithGroupByRequest" name="aggregationWithGroupByRequest">
+		<input type="submit" value="Display" name="aggregationWithGroupByRequestSubmit"></p>
+	</form>
+	<!-- ======================= END AGGREGATION WITH GROUP BY ======================= -->	
+
+	<hr />
+
+
 	<!-- ======================= BEGIN DIVISON ======================= -->	
 	<!-- divison  
 	tables used:
@@ -490,6 +502,33 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		echo "</table>";
 	}
 
+
+
+	function handleAggregationWithGroupByRequest() 
+	{
+		global $db_conn;
+		$agg_query = "SELECT yearOfRecord, COUNT(*) AS NumberOfRecords
+							FROM AnimalMedicalHistory
+							GROUP BY yearOfRecord
+							ORDER BY yearOfRecord";
+		$result = executePlainSQL($agg_query);
+		printAggregationResult($result);
+		oci_commit($db_conn);
+	}
+
+	function printAggregationResult($result) {
+		echo "<br>Aggregation result:<br>";
+		echo "<table>";
+		echo "<tr><th>Year</th><th>Number of Records</th></tr>";
+	
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+			echo "<tr><td>" . $row["YEAROFRECORD"] . "</td><td>" . $row["NUMBEROFRECORDS"] . "</td></tr>";
+		}
+	
+		echo "</table>";
+	}
+	
+
 	// Find the veterinarians (from VeterinarianInfo) who have worked at all hospitals (from AnimalHospital)
 	function handleDivisionRequest() 
 	{
@@ -573,6 +612,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleNestedAggregationWithGroupByRequest();
 			} elseif (array_key_exists('projectionQueryRequest', $_GET)) {
 				handleProjectionRequest($_GET['tableName']);
+			} elseif (array_key_exists('aggregationWithGroupByRequest', $_GET)) {
+				handleAggregationWithGroupByRequest();
 			}
 
 			disconnectFromDB();
@@ -581,7 +622,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit'])) {
 		handlePOSTRequest();
-	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']))  {
+	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']))  {
 		handleGETRequest();
 	}
 
