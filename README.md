@@ -16,15 +16,15 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 
 ## List of queries to implement
 - [X] Insert (Haad)
-- [ ] Delete (Bowen)
+- [X] Delete (Bowen)
 - [X] Update (Bowen)
 - [X] Selection (Haad)
 - [ ] Projection (Bowen)
 - [X] Join (Haad)
-- [ ] Aggregation with group by (Bowen)
-- [ ] Aggregation with having (Bowen)
-- [ ] Nested Aggregation with Group By (Haad)
-- [ ] Division (Haad)
+- [X] Aggregation with group by (Bowen)
+- [X] Aggregation with having (Bowen)
+- [X] Nested Aggregation with Group By (Haad)
+- [X] Division (Haad)
 ## Timeline and task breakdown
 ### Bowen:
 - Will work on implementing the operations assigned to him above
@@ -42,11 +42,11 @@ Our project models a pet adoption system managed by an animal shelter. This shel
   - [X] Pick a table to insert into and finish insert query (Haad)
   - [X] Pick a table to select from and finish select query (Haad)
   - [X] Pick a table to update and finish update query (Bowen)
-  - [ ] Pick a table to delete from and finish delete query (Bowen)
+  - [X] Pick a table to delete from and finish delete query (Bowen)
   - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
 - 16/03/2024
-  - [ ] Join (Haad)
-  - [ ] Aggregation with having (Bowen)
+  - [X] Join (Haad)
+  - [X] Aggregation with having (Bowen)
 - 17/03/2024 - 30/03/2024
   - [ ] Finish remaining queries (Haad + Bowen)
   - [ ] Implement frontend (GUI) (Haad + Bowen)
