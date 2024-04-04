@@ -156,7 +156,7 @@ CREATE TABLE WorkerWorksAt2(
 	branchName varchar(200),
 	sin char(8),
 	name varchar(200),
-	role varchar(200),
+	role varchar(200) NOT NULL,
 	PRIMARY KEY (sin),
 	FOREIGN KEY (branchName) REFERENCES WorkerWorksAt1
 );
@@ -175,6 +175,9 @@ VALUES ('Coastal Animal Rescue', '98765432', 'Emily Davis', 'Receptionist');
 
 INSERT INTO WorkerWorksAt2 (branchName, sin, name, role)
 VALUES ('Mountain Pet Haven', '34567890', 'Chris Miller', 'Groomer');
+
+INSERT INTO WorkerWorksAt2 (branchName, sin, name, role)
+VALUES ('Mountain Pet Haven', '11112233', 'Chris Miller', 'Groomer');
 
 
 CREATE TABLE AnimalHelpedAdopt1(

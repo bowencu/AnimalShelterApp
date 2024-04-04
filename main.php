@@ -155,6 +155,17 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
+	<!-- ======================= BEGIN AGGREGATION WITH HAVING ======================= -->	
+	<h2>Find the roles that only have one worker working in them.</h2>
+	<p><i>Aggregation with having</i></p>
+	<form method="GET" action="main.php">
+    	<input type="hidden" id="aggregationWithHavingRequest" name="aggregationWithHavingRequest">
+		<input type="submit" value="Display" name="aggregationWithHavingRequestSubmit"></p>
+	</form>
+	<!-- ======================= END AGGREGATION WITH HAVING ======================= -->	
+
+	<hr />
+
 
 	<!-- ======================= BEGIN DIVISON ======================= -->	
 	<!-- divison  
@@ -512,17 +523,41 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 							GROUP BY yearOfRecord
 							ORDER BY yearOfRecord";
 		$result = executePlainSQL($agg_query);
-		printAggregationResult($result);
+		printAggregationGroupByResult($result);
 		oci_commit($db_conn);
 	}
 
-	function printAggregationResult($result) {
+	function printAggregationGroupByResult($result) {
 		echo "<br>Aggregation result:<br>";
 		echo "<table>";
 		echo "<tr><th>Year</th><th>Number of Records</th></tr>";
 	
 		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
 			echo "<tr><td>" . $row["YEAROFRECORD"] . "</td><td>" . $row["NUMBEROFRECORDS"] . "</td></tr>";
+		}
+	
+		echo "</table>";
+	}
+
+	function handleAggregationWithHavingRequest() 
+	{
+		global $db_conn;
+		$agg_query = "SELECT role
+							FROM WorkerWorksAt2
+							GROUP BY role
+							HAVING COUNT(*) <= 1";
+		$result = executePlainSQL($agg_query);
+		printAggregationHavingResult($result);
+		oci_commit($db_conn);
+	}
+
+	function printAggregationHavingResult($result) {
+		echo "<br>Aggregation result:<br>";
+		echo "<table>";
+		echo "<tr><th>Role</th></tr>";
+	
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+			echo "<tr><td>" . $row["ROLE"] . "</td></tr>";
 		}
 	
 		echo "</table>";
@@ -614,6 +649,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleProjectionRequest($_GET['tableName']);
 			} elseif (array_key_exists('aggregationWithGroupByRequest', $_GET)) {
 				handleAggregationWithGroupByRequest();
+			} elseif (array_key_exists('aggregationWithHavingRequest', $_GET)) {
+				handleAggregationWithHavingRequest();
 			}
 
 			disconnectFromDB();
@@ -622,7 +659,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit'])) {
 		handlePOSTRequest();
-	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']))  {
+	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithHavingRequestSubmit']))  {
 		handleGETRequest();
 	}
 
