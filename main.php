@@ -76,6 +76,44 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
+	<!-- ======================= BEGIN PROJECTION ======================= -->
+	<h2>Choose attributes of an animal to view</h2>
+	<p><i>Projection on AnimalHelpedAdopt2</i></p>
+	<form method="GET" action="main.php">
+    	<input type="hidden" id="projectionRequest" name="projectionRequest">
+
+		<input type="checkbox" id="name" name="name">
+		<label id="name">Name</label>
+
+		<input type="checkbox" id="age" name="age">
+		<label id="age">Age</label>
+
+		<input type="checkbox" id="adoptionProcessDate" name="adoptionProcessDate">
+		<label id="adoptionProcessDate">Adoption Process Date</label>
+
+		<input type="checkbox" id="breed" name="breed">
+		<label id="breed">Breed</label>
+
+		<input type="checkbox" id="workerSIN" name="workerSIN">
+		<label id="workerSIN">Worker SIN</label>
+
+		<input type="checkbox" id="corporationName" name="corporationName">
+		<label id="corporationName">Corporation Name</label>
+
+		<input type="checkbox" id="branchName" name="branchName">
+		<label id="branchName">Branch Name</label>
+
+		<input type="checkbox" id="animalBranchTag" name="animalBranchTag">
+		<label id="animalBranchTag">Animal Branch Tag</label>
+
+		<div>
+		<input type="submit" value="View" name="projectionSubmit"></p>
+		</div>
+	</form>
+	<!-- ======================= END PROJECTION ======================= -->
+
+	<hr />
+
 	<!-- ======================= BEGIN INSERT ======================= -->
 	<h2>Create new entry for a veterinarian</h2> <!--Insert Values into VeterinarianWorkInfo-->
 	<p><i>This will modify the VeterinarianWorkInfo table.</i></p>
@@ -425,6 +463,88 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	// 	oci_commit($db_conn);
 	// }
 
+
+	function handleProjectionRequest() 
+	{
+		global $db_conn;
+		// Define the array to store selected attributes
+		$selectedAttributes = [];
+
+		// Check if each attribute checkbox is selected
+		if(isset($_GET['name'])) {
+			$selectedAttributes[] = 'name';
+		}
+		if(isset($_GET['age'])) {
+			$selectedAttributes[] = 'age';
+		}
+		if(isset($_GET['adoptionProcessDate'])) {
+			$selectedAttributes[] = 'adoptionProcessDate';
+		}
+		if(isset($_GET['breed'])) {
+			$selectedAttributes[] = 'breed';
+		}
+		if(isset($_GET['workerSIN'])) {
+			$selectedAttributes[] = 'workerSIN';
+		}
+		if(isset($_GET['corporationName'])) {
+			$selectedAttributes[] = 'corporationName';
+		}
+		if(isset($_GET['branchName'])) {
+			$selectedAttributes[] = 'branchName';
+		}
+		if(isset($_GET['animalBranchTag'])) {
+			$selectedAttributes[] = 'animalBranchTag';
+		}
+
+		if (empty($selectedAttributes)) {
+			// If no attributes are selected, return all columns using wildcard *
+			$query = "SELECT * FROM AnimalHelpedAdopt2";
+		} else {
+			$query = "SELECT ";
+			$query .= implode(", ", $selectedAttributes);
+			$query .= " FROM AnimalHelpedAdopt2";
+		}
+
+		$result = executePlainSQL($query);
+
+		printProjectionResult($result, $selectedAttributes);
+		oci_commit($db_conn);
+		echo '<script>alert("Successfully projected on attributes in AnimalHelpedAdopt2");</script>';
+	}
+
+	function printProjectionResult($result, $selectedAttributes)
+	{
+		// Check if there are any rows returned by the query
+		$numRows = oci_num_rows($result);
+		if ($numRows > 0) {
+			// Print table header with selected attribute names
+			echo "<table border='1'>";
+			echo "<tr>";
+			foreach ($selectedAttributes as $attribute) {
+				echo "<th>$attribute</th>";
+			}
+			echo "</tr>";
+	
+			// Print each row of the result
+			while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS)) {
+				echo "<tr>";
+				foreach ($selectedAttributes as $attribute) {
+					echo "<td>" . $row[$attribute] . "</td>";
+				}
+				echo "</tr>";
+			}
+	
+			// Close the table
+			echo "</table>";
+		} else {
+			// If no rows were returned, print a message
+			echo "No records found.";
+		}
+	}
+	
+
+	
+
 	function handleInsertRequest()
 	{
 		global $db_conn;
@@ -651,6 +771,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleAggregationWithGroupByRequest();
 			} elseif (array_key_exists('aggregationWithHavingRequest', $_GET)) {
 				handleAggregationWithHavingRequest();
+			} elseif (array_key_exists('projectionRequest', $_GET)) {
+				handleProjectionRequest();
 			}
 
 			disconnectFromDB();
@@ -659,7 +781,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit'])) {
 		handlePOSTRequest();
-	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithHavingRequestSubmit']))  {
+	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithHavingRequestSubmit']) || isset($_GET['projectionSubmit']))  {
 		handleGETRequest();
 	}
 
