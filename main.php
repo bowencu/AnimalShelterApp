@@ -115,7 +115,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<hr />
 
 	<!-- ======================= BEGIN INSERT ======================= -->
-	<h2>Create new entry for a veterinarian</h2> <!--Insert Values into VeterinarianWorkInfo-->
+	<h2>Create new entry for a veterinarian work info</h2> <!--Insert Values into VeterinarianWorkInfo-->
 	<p><i>This will modify the VeterinarianWorkInfo table.</i></p>
 	<form method="POST" action="main.php">
     	<input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
@@ -552,10 +552,35 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 			$tuple
 		);
 
+		if (!preg_match('/^\d{8}$/', $VETSIN)) {
+			echo '<script>alert("Error: VETSIN must be an 8-digit number.");</script>';
+			return;
+		}
+
+		$exists = executePlainSQL("SELECT COUNT(*) FROM VeterinarianWorkInfo WHERE vetSIN = '$VETSIN' and hospitalAddress = '$HOSPITALADDRESS'");
+		$row = oci_fetch_array($exists, OCI_BOTH);
+		if ($row[0] > 0) {
+			echo '<script>alert("Could not create a new veterinarian work info. The work info with the provided vet SIN and hospital address already exists.");</script>';
+			return;
+		}
+
+		$exists = executePlainSQL("SELECT COUNT(*) FROM VeterinarianInfo WHERE vetSIN = '$VETSIN'");
+		$row = oci_fetch_array($exists, OCI_BOTH);
+		if ($row[0] == 0) {
+			echo '<script>alert("Could not create a new veterinarian work info. The vet SIN does not exist in Veterinarian Info.");</script>';
+			return;
+		}
+
+		$exists = executePlainSQL("SELECT COUNT(*) FROM AnimalHospital WHERE hospitalAddress = '$HOSPITALADDRESS'");
+		$row = oci_fetch_array($exists, OCI_BOTH);
+		if ($row[0] == 0) {
+			echo '<script>alert("Could not create a new veterinarian work info. The hospital address does not exist in AnimalHospital table.");</script>';
+			return;
+		}
+
 		executeBoundSQL("INSERT INTO VeterinarianWorkInfo (vetSIN, hospitalAddress) VALUES (:bind1, :bind2)", $alltuples);
 		oci_commit($db_conn);
-		echo '<script>alert("Successfully created a new veterinarian!");</script>';
-		// echo "Successfully updated medical history for '$animal_name'";
+		echo '<script>alert("Successfully created a new veterinarian work info!");</script>';
 	}
 
 	function handleJoinRequest()
