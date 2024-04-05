@@ -114,6 +114,21 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<hr />
 
+	<!-- ======================= BEGIN SELECTION ======================= -->
+	<h2>Filter Not Owned Animals Based on animal name, vaccination status, and region.</h2> <!--Insert Values into VeterinarianWorkInfo-->
+	<p><i>Selection query on the NotOwnedAnimal table.</i></p>
+	<form method="POST" action="main.php">
+    	<input type="hidden" id="selectionQueryRequest" name="selectionQueryRequest">
+
+		<p><i>e.g. (animalName = 'Bowen' and isVaccinated = '1') or regionFoundIn = 'UBC'</i></p>
+    	Condition (SQL WHERE Clause): <input type="text" name="whereClause"> <br /><br/>
+
+		<input type="submit" value="SELECTION" name="selectionSubmit"></p>
+	</form>
+	<!-- ======================= END SELECTION ======================= -->
+
+	<hr />
+
 	<!-- ======================= BEGIN INSERT ======================= -->
 	<h2>Create new entry for a veterinarian work info</h2> <!--Insert Values into VeterinarianWorkInfo-->
 	<p><i>This will modify the VeterinarianWorkInfo table.</i></p>
@@ -545,8 +560,30 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		echo "</table>";
 	}
 	
+	function handleSelectionRequest()
+	{
+		global $db_conn;
 
-	
+		$condition = $_POST['whereClause'];
+		$result = executePlainSQL("SELECT * FROM NotOwnedAnimal WHERE $condition");
+		printSelectionResult($result);
+		oci_commit($db_conn);
+		echo '<script>alert("Successfully filter tuples in NotOwnedAnimal table!");</script>';
+	}
+
+
+	function printSelectionResult($result) 
+	{
+		echo "<br>Retrieved result from selection:<br>";
+		echo "<table>";
+		echo "<tr><th>animalName</th><th>isVaccinated</th><th>regionFoundIn</th></tr>";
+
+		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+			echo "<tr><td>" . $row["ANIMALNAME"] . "</td><td>" . $row["ISVACCINATED"] . "</td><td>" . $row["REGIONFOUNDIN"] . "</td></tr>"; //or just use "echo $row[0]"
+		}
+
+		echo "</table>";
+	}
 
 	function handleInsertRequest()
 	{
@@ -771,6 +808,8 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				handleJoinRequest();
 			} else if (array_key_exists('deleteQueryRequest', $_POST)) {
 				handleDeleteRequest();
+			} else if (array_key_exists('selectionQueryRequest', $_POST)) {
+				handleSelectionRequest();
 			}
 
 			disconnectFromDB();
@@ -804,7 +843,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		}
 	}
 
-	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit'])) {
+	if (isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['joinSubmit']) || isset($_POST['deleteSubmit']) || isset($_POST['selectionSubmit'])) {
 		handlePOSTRequest();
 	} else if (isset($_GET['displayTablesRequest']) || isset($_GET['divisionQueryRequest']) || isset($_GET['nestedAggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithGroupByRequestSubmit']) || isset($_GET['aggregationWithHavingRequestSubmit']) || isset($_GET['projectionSubmit']))  {
 		handleGETRequest();
