@@ -6,8 +6,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_cuibowen";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a49604481";	// change to 'a' + your student number
+$config["dbuser"] = "ora_hbhutta3";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a78030533";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 $success = true;	// keep track of errors so page redirects only if there are no errors
@@ -67,7 +67,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<form method="GET" action="main.php">
 		<input type="hidden" id="displayTablesRequest" name="displayTablesRequest">
 		<select name="tableName">
-			<?php dropDownAllTables(); ?>
+			<?php displayTables(); ?>
 		</select>
 		<p><input type="submit" name="displayTables"></p>
 	</form>
@@ -240,14 +240,14 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	<?php
 	// The following code will be parsed as PHP
 
-	function dropDownAllTables() {
+	// Citation: code adapted from https://stackoverflow.com/questions/54407750/how-to-display-sql-tables-on-a-dropdown-php-html
+	function displayTables() {
 		if(connectToDB()) {
-			$sql = "SELECT table_name FROM user_tables";
+			$sql = "SELECT table_name FROM user_tables"; // note:  user_tables will have tables depending on your cwl and whether you ran `start script.sql`
 			$result = executePlainSQL($sql);
 			while ($row = oci_fetch_assoc($result)) {
-                echo '<option value="' . $row['TABLE_NAME'] . '">' . $row['TABLE_NAME'] . '</option>';
+                echo '<option value="'.$row['TABLE_NAME'].'">'.$row['TABLE_NAME'].'</option>';
             }
-			
 			disconnectFromDB();
 		}
 	}
@@ -322,29 +322,13 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 			}
 		}
 	}
-
-	function printResult($result)
-	{ //prints results from a select statement
-		echo "<br>Retrieved data from table demoTable:<br>";
-		echo "<table>";
-		echo "<tr><th>ID</th><th>Name</th></tr>";
-
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
-
-		echo "</table>";
-	}
-
+	// Citation: function inspired from code in https://codingstatus.com/display-data-based-on-dropdown-selection-in-php-mysql/
 	function printTables($result, $str)
 	{
-		//prints results
-		echo "<div id='resultContainer'>";
-		echo "<br>Retrieved data from " . $str . ":<br>";
-		echo "<br>";
+		echo "<div id='view'>";
+		echo "<br>".$str.":<br>";
 		echo "<table>";
 	
-		// Fetch the column names from the result set
 		$columns = [];
 		$numberOfColumns = oci_num_fields($result);
 	
@@ -353,28 +337,21 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 			$columns[] = $column;
 		}
 	
-		// Print the table header with column names
 		echo "<tr>";
 		foreach ($columns as $column) {
 			echo "<th>$column</th>";
 		}
 		echo "</tr>";
 	
-		// Loop through each row in the result set
 		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			// Print each row in an HTML table
-			echo "<tr>";
 			foreach ($columns as $column) {
 				if (array_key_exists($column, $row)) {
-					echo "<td>    " . $row[$column] . "    </td>";
-				} else {
-					echo "<td>" . "" . "</td>";
-				}
-				
+					echo "<td>".$row[$column]."</td>";
+				} 
 			}
 			echo "</tr>";
 		}
-		echo "</div>";
+		echo "</div>"; // note: we need to close <div id='view'>
 	}	
 
 	function printJoinResult($result)
@@ -784,13 +761,10 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	{
 		global $db_conn;
 		$table_name = $_GET['tableName'];
-
-
-		$result = executePlainSQL("SELECT * FROM " . $table_name);
+		$result = executePlainSQL("SELECT * FROM ".$table_name."");
 		$column = oci_field_name($result, 1);
-		$result = executePlainSQL("SELECT * FROM " . $table_name . " ORDER BY " . $column . " ASC");
-
-		$str = "table <b>" . $table_name . "</b>";
+		$result = executePlainSQL("SELECT * FROM ".$table_name." ORDER BY ".$column."");
+		$str = "You are currently viewing ".$table_name."";
 		printTables($result, $str);
 	}
 	
