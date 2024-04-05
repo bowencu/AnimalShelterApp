@@ -336,9 +336,9 @@ CREATE TABLE AnimalMedicalHistory(
 	animalName varchar(200),
 	administeringHospital varchar(200),
 	yearOfRecord int,
-PRIMARY KEY (medicalRecordNumber),
-FOREIGN KEY (animalName) REFERENCES AnimalHelpedAdopt2
-	ON DELETE CASCADE
+	PRIMARY KEY (medicalRecordNumber),
+	FOREIGN KEY (animalName) REFERENCES AnimalHelpedAdopt2
+		ON DELETE CASCADE
 );
 
 INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringHospital, yearOfRecord) 
