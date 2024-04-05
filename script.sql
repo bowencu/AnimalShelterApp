@@ -351,7 +351,13 @@ INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringH
 VALUES ('333333333', 'Penny', 'Surrey Animal Hospital', '1999');
 
 INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringHospital, yearOfRecord) 
-VALUES ('444444444', 'Ryan', 'Burnaby Animal Hospital', '2000');
+VALUES ('444444440', 'Ryan', 'Burnaby Animal Hospital', '2000');
+
+INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringHospital, yearOfRecord) 
+VALUES ('444444441', 'Ryan', 'Coquitlam Animal Hospital', '2000');
+
+INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringHospital, yearOfRecord) 
+VALUES ('444444442', 'Ryan', 'Surrey Animal Hospital', '2000');
 
 INSERT INTO AnimalMedicalHistory(medicalRecordNumber, animalName, administeringHospital, yearOfRecord) 
 VALUES ('555555555', 'Mango', 'Vancouver Animal Hospital', '2023');
