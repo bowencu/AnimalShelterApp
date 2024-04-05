@@ -162,7 +162,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<!-- ======================= BEGIN DELETE ======================= -->
 	<h2>Delete Animal From Database</h2>
-    <p>The animal name must match a record in our database. Otherwise, the update statement will not do anything.</p>
+    <p>The animal name must match a record in our database. Otherwise, the delete statement will not do anything.</p>
 
     <form method="POST" action="main.php">
         <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
