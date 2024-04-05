@@ -43,16 +43,16 @@ Our project models a pet adoption system managed by an animal shelter. This shel
   - [X] Pick a table to select from and finish select query (Haad)
   - [X] Pick a table to update and finish update query (Bowen)
   - [X] Pick a table to delete from and finish delete query (Bowen)
-  - [ ] Determine user interfaces of the application (designing GUI) (all members in collaboration)
+  - [X] Determine user interfaces of the application (designing GUI) (all members in collaboration)
 - 16/03/2024
   - [X] Join (Haad)
   - [X] Aggregation with having (Bowen)
 - 17/03/2024 - 30/03/2024
-  - [ ] Finish remaining queries (Haad + Bowen)
-  - [ ] Implement frontend (GUI) (Haad + Bowen)
+  - [X] Finish remaining queries (Haad + Bowen)
+  - [X] Implement frontend (GUI) (Haad + Bowen)
 - 5/04/2024
-  - [ ] Debugging (all)
-  - [ ] Test run (Triston)
+  - [X] Debugging (all)
+  - [X] Test run (Triston)
   - [ ] Submit URL (Triston)
   
   
