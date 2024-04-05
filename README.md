@@ -5,15 +5,6 @@ Our project models a pet adoption system managed by an animal shelter. This shel
 
 ### Tech Stack: HTML, CSS, PHP, Oracle, SQL
 
-### Queries
-1. Insert
-- User can insert into VeterinarianWorkInfo two values: a VETSIN that is valid (i.e. exists in the VeterinarianInfo table), and a HOSPITALADDRESS that is valid (i.e. exists in the AnimalHospital table). If one or both of the entries are invalid foregin keys, the user is alerted in the webpage and with a pop-up message.
-- The insert statement has to also effect the tables referred to by the foreign keys.
-2. Select
-- We choose to let the user select from the AnimalHelpedAdopt2 table.
-- User specifies
-
-
 ## List of queries to implement
 - [X] Insert (Haad)
 - [X] Delete (Bowen)
